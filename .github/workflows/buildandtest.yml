@@ -1,0 +1,30 @@
+name: APSIM.Graphs build and test
+
+on:
+  pull_request_target:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '8.0.x' ]
+
+    steps:
+      - name: Checkout Pull request branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+          ref: ${{github.event.pull_request.head.ref}}
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Install dependencies
+        run: dotnet restore APSIM.Graphs.sln
+      - name: Build
+        run: dotnet build APSIM.Graphs.sln --configuration Debug --no-restore --verbosity minimal
+      - name: Test
+        run: dotnet test APSIM.Graphs.sln --no-restore --verbosity minimal
