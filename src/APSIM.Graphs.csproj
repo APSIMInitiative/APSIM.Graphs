@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
 
     <PackageId>APSIM.Graphs</PackageId>
-    <Version>8.0.0</Version>
+    <Version>8.1.0</Version>
     <Authors>APSIM Initiative</Authors>
     <Company>APSIM Initiative</Company>
     <PackageTags>APSIM,Graphs</PackageTags>
