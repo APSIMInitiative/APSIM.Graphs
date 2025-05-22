@@ -13,19 +13,22 @@ public static class SoilGraph
     /// <param name="sat">Saturation (mm/mm)</param>
     /// <param name="cll">Crop lower limit - optional (mm/mm)</param>
     /// <param name="cropName">Name of crop - optional</param>
-    /// <param name="pawc">Plant available water (mm)</param>
+    /// <param name="pawc">Plant available water content (mm)</param>
+    /// <param name="paw">Plant available water (mm)</param>
     /// <param name="swMidPoints">The layer mid points for sw.</param>
     /// <param name="sw">The soil water.</param>
     public static Graph Create(string title, IReadOnlyList<double> midPoints,
                                IReadOnlyList<double> airdry, IReadOnlyList<double> ll15,
                                IReadOnlyList<double> dul, IReadOnlyList<double> sat,
-                               IReadOnlyList<double> cll = null, string cropName = null, double pawc = double.NaN,
+                               IReadOnlyList<double> cll = null, string cropName = null, double pawc = double.NaN, double paw = double.NaN,
                                IReadOnlyList<double> swMidPoints = null, IReadOnlyList<double> sw = null)
     {
         Graph graph = new()
         {
             Title = title,
             LegendPosition = Graph.LegendPositionEnum.BottomLeft,
+            LegendInside = false,
+            LegendVertical = false,
             Axes =
             [
                 new()
@@ -47,7 +50,7 @@ public static class SoilGraph
         };
         IReadOnlyList<double> ll;
         string llName;
-        if (ll15 != null)
+        if (cll == null)
         {
             ll = ll15;
             llName = "LL15";
@@ -55,25 +58,54 @@ public static class SoilGraph
         else
         {
             ll = cll;
-            llName = cropName;
+            llName = $"{cropName} LL";
         }
 
         if (!double.IsNaN(pawc))
-            llName += $" PAWC: {pawc:F0} mm";
+            llName += $" (PAWC: {pawc:F0}mm)";
 
         graph.Series =
         [
             new()
             {
-                Title = $"{llName}",
+                Title = "Bucket",
                 SeriesType = Series.SeriesTypeEnum.Area,
                 Points = ll.Zip(midPoints)
                            .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
                 Points2 = dul.Zip(midPoints)
                              .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
+                ShowInLegend = false,
+                LineType = Series.LineTypeEnum.None,
+                Colour = Color.LightBlue
+            }
+        ];
+
+        if (swMidPoints != null && sw != null)
+        {
+            graph.Series.Add(
+                new()
+                {
+                    Title = $"SW (PAW: {paw:F0}mm)",
+                    SeriesType = Series.SeriesTypeEnum.Area,
+                    Points = ll.Zip(midPoints)
+                               .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
+                    Points2 = sw.Zip(midPoints)
+                                .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
+                    ShowInLegend = true,
+                    LineType = Series.LineTypeEnum.None,
+                    Colour = Color.Blue,
+                });
+        }
+        graph.Series.AddRange(
+        [
+            new()
+            {
+                Title = llName,
+                Points = ll.Zip(midPoints)
+                           .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
                 ShowInLegend = true,
                 LineType = Series.LineTypeEnum.Solid,
-                Colour = Color.LightBlue,
+                Colour = Color.Red,
             },
             new()
             {
@@ -82,15 +114,6 @@ public static class SoilGraph
                                .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
                 ShowInLegend = true,
                 LineType = Series.LineTypeEnum.Dot,
-                Colour = Color.Red,
-            },
-            new()
-            {
-                Title = "LL15",
-                Points = ll15.Zip(midPoints)
-                             .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
-                ShowInLegend = true,
-                LineType = Series.LineTypeEnum.Solid,
                 Colour = Color.Red,
             },
             new()
@@ -109,22 +132,9 @@ public static class SoilGraph
                             .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
                 ShowInLegend = true,
                 LineType = Series.LineTypeEnum.Dot,
-                Colour = Color.Blue,
-            }
-        ];
+                Colour = Color.DarkBlue,
+            }]);
 
-        if (swMidPoints != null && sw != null)
-        {
-            graph.Series.Add(new Series()
-            {
-                Title = "SW",
-                Points = sw.Zip(swMidPoints)
-                           .Select(zip => new DataPoint { X = zip.First, Y = zip.Second }),
-                ShowInLegend = true,
-                LineType = Series.LineTypeEnum.Solid,
-                Colour = Color.Green,
-            });
-        }
         return graph;
     }
 }

@@ -74,6 +74,7 @@ public static class GraphRenderToPNG
                 var areaSeries = new AreaSeries();
                 foreach (var point in series.Points2)
                     areaSeries.Points2.Add(new OxyPlot.DataPoint(point.X, point.Y));
+                areaSeries.Fill = OxyColor.FromArgb(series.Colour.A, series.Colour.R, series.Colour.G, series.Colour.B);
                 lineSeries = areaSeries;
             }
 
@@ -99,6 +100,7 @@ public static class GraphRenderToPNG
             };
             lineSeries.MarkerSize = 6;
             lineSeries.Title = series.Title;
+            lineSeries.RenderInLegend = series.ShowInLegend;
 
             foreach (var point in series.Points)
                 lineSeries.Points.Add(new OxyPlot.DataPoint(point.X, point.Y));
@@ -118,9 +120,9 @@ public static class GraphRenderToPNG
                     Graph.LegendPositionEnum.BottomRight => OxyLegendPosition.BottomRight,
                     _ => OxyLegendPosition.TopLeft
                 },
-                LegendOrientation = OxyLegendOrientation.Vertical,
-                LegendPlacement = LegendPlacement.Inside,
-                LegendSymbolLength = 30,
+                LegendOrientation = graph.LegendVertical ? OxyLegendOrientation.Vertical : OxyLegendOrientation.Horizontal,
+                LegendPlacement = graph.LegendInside ? LegendPlacement.Inside : LegendPlacement.Outside,
+                LegendSymbolLength = 20,
             };
             plotModel.Legends.Add(legend);
         }

@@ -10,6 +10,8 @@ public class Graph
     public bool ShowLegend { get; set; }
     public enum LegendPositionEnum { TopLeft, BottomLeft, TopRight, BottomRight }
     public LegendPositionEnum LegendPosition { get; set; }
+    public bool LegendInside { get; set; } = true;
+    public bool LegendVertical { get; set; } = true;
 }
 
 
