@@ -15,9 +15,9 @@ public class Tests
         var graph = SoilGraph.Create("title", midPoints, airdry, ll15, dul, sat, pawc: 123);
         Assert.That(graph.Series.Count, Is.EqualTo(5));
         Assert.That(graph.Title, Is.EqualTo("title"));
-        Assert.That(graph.Series[0].Title, Is.EqualTo("LL15 PAWC: 123 mm"));
-        Assert.That(graph.Series[1].Title, Is.EqualTo("Airdry"));
-        Assert.That(graph.Series[2].Title, Is.EqualTo("LL15"));
+        Assert.That(graph.Series[0].Title, Is.EqualTo("Bucket"));
+        Assert.That(graph.Series[1].Title, Is.EqualTo("LL15 (PAWC: 123mm)"));
+        Assert.That(graph.Series[2].Title, Is.EqualTo("Airdry"));
         Assert.That(graph.Series[3].Title, Is.EqualTo("DUL"));
         Assert.That(graph.Series[4].Title, Is.EqualTo("SAT"));
     }
